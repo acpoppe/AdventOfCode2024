@@ -150,3 +150,5 @@ Cargo.lock
 **/examples/
 **/inputs/
 **/puzzles/
+
+**/files/
