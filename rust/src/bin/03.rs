@@ -3,14 +3,15 @@ use regex::Regex;
 advent_of_code::solution!(3);
 
 fn execute_program(input: &str, reg: Regex) -> u64 {
-    let cmds = reg.find_iter(input)
+    let cmds = reg
+        .find_iter(input)
         .map(|cmd| cmd.as_str())
         .collect::<Vec<&str>>();
     let mut executable_cmds: Vec<&str> = vec![];
 
     let mut stop_execution = false;
 
-    for i in 0..cmds.len() {
+    (0..cmds.len()).for_each(|i| {
         if cmds[i] == "do()" {
             stop_execution = false;
         } else if cmds[i] == "don't()" {
@@ -18,18 +19,20 @@ fn execute_program(input: &str, reg: Regex) -> u64 {
         } else if !stop_execution {
             executable_cmds.push(cmds[i]);
         }
-    }
-        
-    executable_cmds.into_iter().map(|cmd| {
-        let nums: Vec<u64> = cmd.split("(").collect::<Vec<&str>>()[1]
-            .split(")")
-            .collect::<Vec<&str>>()[0]
-            .split(",")
-            .map(|n| n.parse::<u64>().unwrap())
-            .collect();
-        nums[0] * nums[1]
-    })
-    .sum()
+    });
+
+    executable_cmds
+        .into_iter()
+        .map(|cmd| {
+            let nums: Vec<u64> = cmd.split("(").collect::<Vec<&str>>()[1]
+                .split(")")
+                .collect::<Vec<&str>>()[0]
+                .split(",")
+                .map(|n| n.parse::<u64>().unwrap())
+                .collect();
+            nums[0] * nums[1]
+        })
+        .sum()
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
