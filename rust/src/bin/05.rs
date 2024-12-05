@@ -8,22 +8,58 @@ pub fn part_one(input: &str) -> Option<u64> {
     let input_sections = read_sections(input);
     let page_orders: HashMap<u64, Vec<u64>> = parse_page_orders(input_sections[0]);
     let updates = parse_updates(input_sections[1]);
-    let valid_updates = updates.iter().filter(|u| is_correctly_ordered(u, &page_orders)).collect::<Vec<&Vec<u64>>>();
-    Some(valid_updates.iter().map(|u| calculate_middle_page(u)).sum::<u64>())
+    let valid_updates = updates
+        .iter()
+        .filter(|u| is_correctly_ordered(u, &page_orders))
+        .collect::<Vec<&Vec<u64>>>();
+    Some(valid_updates.iter().map(|u| u[u.len() / 2]).sum::<u64>())
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    None
+    let input_sections = read_sections(input);
+    let page_orders: HashMap<u64, Vec<u64>> = parse_page_orders(input_sections[0]);
+    let updates = parse_updates(input_sections[1]);
+    let invalid_updates = updates
+        .iter()
+        .filter(|u| !is_correctly_ordered(u, &page_orders))
+        .collect::<Vec<&Vec<u64>>>();
+    let fixed_updates = invalid_updates
+        .iter()
+        .map(|u| fix_order(u, &page_orders))
+        .collect::<Vec<Vec<u64>>>();
+    Some(fixed_updates.iter().map(|u| u[u.len() / 2]).sum::<u64>())
 }
 
-fn calculate_middle_page(valid_update: &[u64]) -> u64 {
-    valid_update[valid_update.len() / 2]
+fn fix_order(prepended_pages: &[u64], page_orders: &HashMap<u64, Vec<u64>>) -> Vec<u64> {
+    let mut fixed_order: Vec<u64> = vec![];
+    (0..prepended_pages.len()).for_each(|i| {
+        let mut inserted = false;
+        for p in 0..fixed_order.len() {
+            if page_orders
+                .get(&prepended_pages[i])
+                .unwrap_or(&vec![])
+                .contains(&fixed_order[p])
+            {
+                fixed_order.insert(p, prepended_pages[i]);
+                inserted = true;
+                break;
+            }
+        }
+        if !inserted {
+            fixed_order.push(prepended_pages[i]);
+        }
+    });
+    fixed_order
 }
 
 fn is_correctly_ordered(prepended_pages: &[u64], page_orders: &HashMap<u64, Vec<u64>>) -> bool {
     for i in 1..prepended_pages.len() {
         for p in 0..i {
-            if page_orders.get(&prepended_pages[i]).unwrap_or(&vec![]).contains(&prepended_pages[p]) {
+            if page_orders
+                .get(&prepended_pages[i])
+                .unwrap_or(&vec![])
+                .contains(&prepended_pages[p])
+            {
                 return false;
             }
         }
@@ -33,7 +69,14 @@ fn is_correctly_ordered(prepended_pages: &[u64], page_orders: &HashMap<u64, Vec<
 
 fn parse_updates(chunk: &str) -> Vec<Vec<u64>> {
     let lines = read_lines(chunk);
-    lines.iter().map(|l| l.split(",").map(|n| n.parse::<u64>().unwrap()).collect::<Vec<u64>>()).collect::<Vec<Vec<u64>>>()
+    lines
+        .iter()
+        .map(|l| {
+            l.split(",")
+                .map(|n| n.parse::<u64>().unwrap())
+                .collect::<Vec<u64>>()
+        })
+        .collect::<Vec<Vec<u64>>>()
 }
 
 fn parse_page_orders(chunk: &str) -> HashMap<u64, Vec<u64>> {
@@ -64,6 +107,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(123));
     }
 }
