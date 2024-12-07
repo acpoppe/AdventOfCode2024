@@ -4,50 +4,35 @@ use std::{
     process,
 };
 
-use crate::Day;
+use crate::template::Day;
 
-const MODULE_TEMPLATE: &str = r#"advent_of_code::solution!(DAY_NUMBER);
+const MODULE_TEMPLATE: &str =
+    include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/template.txt"));
 
-pub fn part_one(input: &str) -> Option<u32> {
-    None
-}
-
-pub fn part_two(input: &str) -> Option<u32> {
-    None
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_part_one() {
-        let result = part_one(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+fn safe_create_file(path: &str, overwrite: bool) -> Result<File, std::io::Error> {
+    let mut file = OpenOptions::new();
+    if overwrite {
+        file.create(true);
+    } else {
+        file.create_new(true);
     }
-
-    #[test]
-    fn test_part_two() {
-        let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
-    }
-}
-"#;
-
-fn safe_create_file(path: &str) -> Result<File, std::io::Error> {
-    OpenOptions::new().write(true).create_new(true).open(path)
+    file.truncate(true).write(true).open(path)
 }
 
 fn create_file(path: &str) -> Result<File, std::io::Error> {
-    OpenOptions::new().write(true).create(true).open(path)
+    OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(path)
 }
 
-pub fn handle(day: Day) {
+pub fn handle(day: Day, overwrite: bool) {
     let input_path = format!("data/inputs/{day}.txt");
     let example_path = format!("data/examples/{day}.txt");
     let module_path = format!("src/bin/{day}.rs");
 
-    let mut file = match safe_create_file(&module_path) {
+    let mut file = match safe_create_file(&module_path, overwrite) {
         Ok(file) => file,
         Err(e) => {
             eprintln!("Failed to create module file: {e}");
@@ -57,7 +42,7 @@ pub fn handle(day: Day) {
 
     match file.write_all(
         MODULE_TEMPLATE
-            .replace("DAY_NUMBER", &day.into_inner().to_string())
+            .replace("%DAY_NUMBER%", &day.into_inner().to_string())
             .as_bytes(),
     ) {
         Ok(()) => {
@@ -90,5 +75,5 @@ pub fn handle(day: Day) {
     }
 
     println!("---");
-    println!("🎄 Type `cargo solve {}` to run your solution.", day);
+    println!("🎄 Type `cargo solve {day}` to run your solution.");
 }

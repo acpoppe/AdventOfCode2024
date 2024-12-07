@@ -1,6 +1,4 @@
-mod day;
 pub mod template;
-
-pub use day::*;
-
 pub mod aoc_helpers;
+
+// Use this file to add helper functions and additional modules.
