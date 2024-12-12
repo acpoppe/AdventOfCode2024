@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 advent_of_code::solution!(9);
 
 #[derive(Debug, Copy, Clone)]
@@ -14,7 +16,9 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    None
+    let mut map = parse_input(input);
+    compact_pt_2(&mut map);
+    Some(calculate_return(&map))
 }
 
 fn combine_at_end(map: &mut Vec<Block>) {
@@ -40,10 +44,41 @@ fn calculate_return(map: &[Block]) -> u64 {
                     i += 1;
                 }
             },
-            _ => continue,
+            Block::Empty(a) => {
+                i += a
+            }
         }
     }
     total
+}
+
+fn compact_pt_2(map: &mut Vec<Block>) {
+    let mut i = map.len() - 1;
+    let mut has_moved: HashSet<u64> = HashSet::new();
+    while i > 0 {
+        combine_adjacent_empties(map);
+        if i >= map.len() || map.is_empty() {
+            i = map.len() - 1;
+            continue;
+        }
+        if let Block::Filled(_, _) = map[i]{
+            compact_whole_file(map, i, &mut has_moved);
+        }
+        i -= 1;
+    }
+}
+
+fn combine_adjacent_empties(map: &mut Vec<Block>) {
+    for i in 0..map.len() {
+        if i + 1 >= map.len() {
+            break;
+        }
+        if let (Block::Empty(x), Block::Empty(y)) = (map[i], map[i + 1]) {
+            map.remove(i);
+            map.remove(i);
+            map.insert(i, Block::Empty(x + y));
+        }
+    }
 }
 
 fn compact(map: &mut Vec<Block>) {
@@ -64,6 +99,37 @@ fn clear_empty_from_end(map: &mut Vec<Block>) {
             _ => break,
         };
     }
+}
+
+fn compact_whole_file(map: &mut Vec<Block>, cmpct_idx: usize, has_moved: &mut HashSet<u64>) {
+    if let Block::Filled(x, _) = map[cmpct_idx] {
+        if has_moved.contains(&x) {
+            return;
+        }
+    }
+    let file = match map.remove(cmpct_idx) {
+        Block::Filled(x, y) => (x, y),
+        _ => return,
+    };
+    map.insert(cmpct_idx, Block::Empty(file.1));
+
+    has_moved.insert(file.0);
+
+    for i in 0..map.len() {
+        match map[i] {
+            Block::Empty(y) if y == file.1 => {
+                map[i] = Block::Filled(file.0, file.1);
+                return;
+            }
+            Block::Empty(y) if y > file.1 => {
+                map[i] = Block::Empty(y - file.1);
+                map.insert(i, Block::Filled(file.0, file.1));
+                return;
+            }
+            _ => continue,
+        }
+    }
+    map.insert(cmpct_idx, Block::Filled(file.0, file.1));
 }
 
 fn compact_block(map: &mut Vec<Block>, i: usize) {
