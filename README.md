@@ -16,3 +16,4 @@ I don't have any specific objective with these, so projects may be in whatever l
 | 6   | Day 6: Guard Gallivant         	       | [Day 6](https://adventofcode.com/2024/day/6) - [Part 2](https://adventofcode.com/2024/day/6#part2)    | rust        |
 | 7   | Day 7: Bridge Repair         	       | [Day 7](https://adventofcode.com/2024/day/7) - [Part 2](https://adventofcode.com/2024/day/7#part2)    | rust        |
 | 8   | Day 8: Resonant Collinearity           | [Day 8](https://adventofcode.com/2024/day/8) - [Part 2](https://adventofcode.com/2024/day/8#part2)    | rust        |
+| 9   | Day 9: Disk Fragmenter                 | [Day 9](https://adventofcode.com/2024/day/9) - [Part 2](https://adventofcode.com/2024/day/9#part2)    | rust        |
