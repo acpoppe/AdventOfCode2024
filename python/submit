@@ -1,0 +1,15 @@
+#!/bin/bash
+# script for daily collect content of problem of AOC
+# inputs are : DAY, YEAR, PART, TEST (need to respect the order)
+
+if [ "$#" -ne 4 ]; then
+  echo "Need four input arguments in the following order: submit <day> <year> <part> <test>"
+  exit 1
+fi
+
+DAY=$1
+YEAR=$2
+PART=$3
+TEST=$4
+cd problems/${YEAR}/day_${DAY}
+poetry run python3 solution.py -part $PART -test $TEST
