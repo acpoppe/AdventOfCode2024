@@ -18,3 +18,4 @@ I don't have any specific objective with these, so projects may be in whatever l
 | 8   | Day 8: Resonant Collinearity           | [Day 8](https://adventofcode.com/2024/day/8) - [Part 2](https://adventofcode.com/2024/day/8#part2)    | rust                 |
 | 9   | Day 9: Disk Fragmenter                 | [Day 9](https://adventofcode.com/2024/day/9) - [Part 2](https://adventofcode.com/2024/day/9#part2)    | rust                 |
 | 10  | Day 10: Hoof It                        | [Day 10](https://adventofcode.com/2024/day/10) - [Part 2](https://adventofcode.com/2024/day/10#part2) | python               |
+| 11  | Day 11: Plutonian Pebbles              | [Day 11](https://adventofcode.com/2024/day/11) - [Part 2](https://adventofcode.com/2024/day/11#part2) | python               |
